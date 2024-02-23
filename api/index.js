@@ -12,10 +12,10 @@ mongoose.connect(process.env.MONGO).then(()=>{
     console.log(err);
 })
 const app=express();
- app.use(express.json);
+app.use(express.json());
 app.listen(3000,() =>{
     console.log('Server listening on port 3000')
 });
+
 app.use("/api/user",userRoutes);
-app.use("/api/auth",authRoutes);
-console.log("d444dddd");
+app.use("/api/auth",authRoutes);   
