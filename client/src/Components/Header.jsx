@@ -10,7 +10,7 @@ export default function Header() {
                 <Link to={'/'}><li>Home</li></Link>
                 <Link to={'/About'}><li>About</li></Link>
                 <Link to={'Signin'}> <li>Signin</li></Link>
-                <Link to={'Signup'}> <li>Signup</li></Link>
+              
             </ul>
         </div>
 
