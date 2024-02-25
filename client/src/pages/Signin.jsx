@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { Link ,useNavigate} from 'react-router-dom';
+import { signinstart,signinsuccess,signinfailure } from '../redux/user/userslice';
+import { useDispatch,useSelector } from 'react-redux';
+
 
 export default function Signin() {
   const [form,setform]=useState({});
-  const [loading,setloading]=useState(false);
-  const [error,seterror]=useState(false);
+  const {loading,error}= useSelector((state)=>state.user);
   const navigate=useNavigate();
+  const dispatch=useDispatch();
+
 
   const handlechange=(e)=>{
     setform({...form,[e.target.id]:e.target.value});
@@ -13,8 +17,7 @@ export default function Signin() {
   const handlesubmit=async(e)=>{
     e.preventDefault();
     try{
-      seterror(false);
-      setloading(true);
+      dispatch(signinstart());
       const res =await fetch('/api/auth/signin',{
         method:'POST',
         headers:{
@@ -23,17 +26,16 @@ export default function Signin() {
         body:JSON.stringify(form),
       });
       const data=await res.json();
-      setloading(false);
-      seterror(false);
+      
       if(data.success===false){
-        seterror(true);
+        dispatch(signinfailure(data.message));
         return;
       }
-    
+      console.log(data);
+      dispatch(signinsuccess(data));
       navigate('/'); 
     }catch(err){
-      setloading(false);
-      seterror(true);
+        dispatch(signinfailure(err));
     }
   }
   
@@ -51,7 +53,7 @@ export default function Signin() {
         <span className="text-blue-500">{loading?'Loading':'Sign up'}</span>
         </Link>
       </div>
-      <p className="text-red-700 mt-5"> {error && 'Something went wrong!!'}</p>
+      <p className="text-red-700 mt-5"> {error ?error|| 'Something went wrong!!':''}</p>
     </div> 
     </div>
   )
