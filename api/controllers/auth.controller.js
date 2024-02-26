@@ -34,3 +34,29 @@ export const signin=async(req,res,next)=>{
         next(err);
     }
 };
+
+export const google=async(req,res,next)=>{
+    try {
+        const user=await User.findOne({email:req.body.email})
+        if(user){
+            const token=jwt.sign({id:user._id},process.env.JWT_SECRET);
+            const {password:Hashedpassword,...rest}=user._doc;
+            const expirydate=new Date(Date.now()+3600000);
+            res.cookie('access_token',token,{httpOnly:true,expires:expirydate}).status(200).json(rest);
+        }
+        else{
+            const generatedpassword=Math.random().toString(36).slice(-8)+Math.random().toString(36).slice(-8);
+            const hashedpassword=bcryptjs.hashSync(generatedpassword,10)
+            const newuser=new User({username:req.body.name.split(" ").join("").toLowerCase()+Math.random().toString(36).slice(-8),email:req.body.email,password:hashedpassword,profilepicture:req.body.photo});
+            await newuser.save();
+            const token=jwt.sign({id:user._id},process.env.JWT_SECRET);
+            const {password:hashedpassword2,...rest}=user._doc;
+            const expirydate=new Date(Date.now()+3600000);
+            res.cookie('access_token',token,{httpOnly:true,expires:expirydate}).status(200).json(rest);
+             
+        }
+        
+    } catch (error) {
+        next(error);
+    }
+}
