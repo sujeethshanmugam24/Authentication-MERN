@@ -29,7 +29,8 @@ export const signin=async(req,res,next)=>{
         if(!validpassword) return next(errorhandler(401,'wrong credentials'));
         const token=jwt.sign({id:validuser._id},process.env.JWT_SECRET);
         const{password:Hashedpassword,...rest}=validuser._doc;
-        res.cookie("access_token",token,{httpOnly:true}).status(200).json(rest);
+        const expirydate=new Date(Date.now()+3600000);
+        res.cookie("access_token",token,{httpOnly:true,expires:expirydate}).status(200).json(rest);
     }catch(err){
         next(err);
     }
